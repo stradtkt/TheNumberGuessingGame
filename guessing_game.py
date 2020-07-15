@@ -13,47 +13,66 @@ import random
 
 
 def start_game():
-    """Psuedo-code Hints
-    
-    When the program starts, we want to:
-    ------------------------------------
-    1. Display an intro/welcome message to the player.
-    2. Store a random number as the answer/solution.
-    3. Continuously prompt the player for a guess.
-      a. If the guess greater than the solution, display to the player "It's lower".
-      b. If the guess is less than the solution, display to the player "It's higher".
-    
-    4. Once the guess is correct, stop looping, inform the user they "Got it"
-         and show how many attempts it took them to get the correct number.
-    5. Let the player know the game is ending, or something that indicates the game is over.
-    
-    ( You can add more features/enhancements if you'd like to. )
-    """
-    # write your code inside this function.
-    play = True
-    while play:
-        random_number = random.randint(1, 20)
-        guess = int(input("Enter an integer from 1 to 20: "))
-        while random_number != "guess":
-            if guess < random_number:
-                try:
-                    print("Guess is too low!")
-                    guess = int(input("Enter an integer from 1 to 20: "))
-                except (SyntaxError, ValueError):
-                    print('Sorry you need to put in a number for your guess!  Please try again!  ')
-            elif guess > random_number:
-                print("Guess is too high!")
-                guess = int(input("Enter an integer from 1 to 20: "))
+    count = 0
+
+    def welcome_message():
+        print(""" 
+ _____ _        _  _            _              ___                _            ___                
+|_   _| |_  ___| \| |_  _ _ __ | |__  ___ _ _ / __|_  _ ___ _____(_)_ _  __ _ / __|__ _ _ __  ___ 
+  | | | ' \/ -_) .` | || | '  \| '_ \/ -_) '_| (_ | || / -_|_-<_-< | ' \/ _` | (_ / _` | '  \/ -_)
+  |_| |_||_\___|_|\_|\_,_|_|_|_|_.__/\___|_|  \___|\_,_\___/__/__/_|_||_\__, |\___\__,_|_|_|_\___|
+                                                                        |___/  
+        """)
+        print("Press [q/Q] to quit")
+
+    def random_number():
+        number = random.randint(1, 20)
+        return number
+
+    def guess(count, number):
+        while True:
+            try:
+                the_guess = input('Guess a number between 1 and 20: ')
+                if the_guess == "q" or the_guess == "Q":
+                    print("Thank you for playing!")
+                    print("Goodbye!")
+                    exit()
+                if not the_guess.isdigit():
+                    raise ValueError("The guess needs to be a digit, please try again.")
+                the_guess = int(the_guess)
+                if the_guess > 20 or the_guess < 1:
+                    raise ValueError("The guess is out of the specified range for the game.  Please try again.")
+            except ValueError as error:
+                print("There has been an error.  Your error is: {}".format(error))
             else:
-                print("you guessed it!")
-                break
-        again = str(input('Wanna play again? (yes/no)'))
-        if again == 'no':
-            play = False
-            break
-        elif again == 'yes':
-            play = True
+                count += 1
+                if the_guess == number:
+                    print("You guessed the right number!  It took you {} attempts to guess.".format(count))
+                    play_again()
+                if the_guess > number:
+                    print("The number is lower than that, please try again.")
+                if the_guess < number:
+                    print("The number is higher than that, please try again.")
 
 
-# Kick off the program by calling the start_game function.
-start_game()
+    def play_again(count):
+        while True:
+            try:
+                play_again = input("Do you want to play again?  [y/yes] or [n/no]").lower()
+                if play_again not in ("y", "yes", "n", "no", "q"):
+                    raise ValueError("Please enter [y or yes] or [n or no]")
+            except ValueError as error:
+                print("There has been an error.  Your error is: {}".format(error))
+            else:
+                if play_again == "y" or play_again == "yes":
+                    count = 0
+                    number = random_number()
+                    guess(count, number)
+
+
+    welcome_message()
+    number = random_number()
+    guess(count, number)
+
+if __name__ == '__main__':
+    start_game()
